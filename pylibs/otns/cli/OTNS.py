@@ -86,11 +86,7 @@ class OTNS(object):
                          or continue forever if duration is not specified.
         :param speed: simulating speed. Use current simulating speed if not specified.
         """
-        if duration is None:
-            cmd = 'go ever'
-        else:
-            cmd = f'go {duration}'
-
+        cmd = 'go ever' if duration is None else f'go {duration}'
         if speed is not None:
             cmd += f' speed {speed}'
 
@@ -101,7 +97,7 @@ class OTNS(object):
         """
         :return: simulating speed
         """
-        speed = self._expect_float(self._do_command(f'speed'))
+        speed = self._expect_float(self._do_command('speed'))
         if speed >= OTNS.MAX_SIMULATE_SPEED:
             return OTNS.MAX_SIMULATE_SPEED  # max speed
         elif speed <= OTNS.PAUSE_SIMULATE_SPEED:
@@ -133,15 +129,13 @@ class OTNS(object):
 
     @staticmethod
     def _detect_otns_path() -> str:
-        env_otns_path = os.getenv('OTNS')
-        if env_otns_path:
+        if env_otns_path := os.getenv('OTNS'):
             return env_otns_path
 
-        which_otns = shutil.which('otns')
-        if not which_otns:
+        if which_otns := shutil.which('otns'):
+            return which_otns
+        else:
             raise RuntimeError("otns not found in current directory and PATH")
-
-        return which_otns
 
     def _do_command(self, cmd: str) -> List[str]:
         logging.info("OTNS <<< %s", cmd)
@@ -183,9 +177,9 @@ class OTNS(object):
         """
         cmd = f'add {type}'
         if x is not None:
-            cmd = cmd + f' x {x}'
+            cmd = f'{cmd} x {x}'
         if y is not None:
-            cmd = cmd + f' y {y}'
+            cmd = f'{cmd} y {y}'
 
         if id is not None:
             cmd += f' id {id}'
@@ -197,7 +191,7 @@ class OTNS(object):
             cmd += f' exe "{executable}"'
 
         if restore:
-            cmd += f' restore'
+            cmd += ' restore'
 
         return self._expect_int(self._do_command(cmd))
 
@@ -286,9 +280,6 @@ class OTNS(object):
                     v = v == 'true'
                 elif k in ('ct_interval', 'ct_delay'):
                     v = float(v)
-                else:
-                    pass
-
                 nodeinfo[k] = v
 
             nodes[nodeinfo['id']] = nodeinfo
@@ -426,8 +417,7 @@ class OTNS(object):
         :return: lines of command output
         """
         cmd = f'node {nodeid} "{cmd}"'
-        output = self._do_command(cmd)
-        return output
+        return self._do_command(cmd)
 
     def get_state(self, nodeid: int) -> str:
         """
@@ -733,8 +723,7 @@ class OTNS(object):
         Get recent CoAP messages.
         """
         lines = self._do_command('coaps')
-        messages = yaml.safe_load('\n'.join(lines))
-        return messages
+        return yaml.safe_load('\n'.join(lines))
 
     @staticmethod
     def _expect_int(output: List[str]) -> int:

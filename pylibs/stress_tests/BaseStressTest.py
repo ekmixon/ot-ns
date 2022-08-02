@@ -82,8 +82,7 @@ class BaseStressTest(object, metaclass=StressTestMetaclass):
         raise NotImplementedError()
 
     def reset(self):
-        nodes = self.ns.nodes()
-        if nodes:
+        if nodes := self.ns.nodes():
             self.ns.delete(*nodes.keys())
 
     def stop(self):
@@ -138,18 +137,17 @@ class BaseStressTest(object, metaclass=StressTestMetaclass):
 
             nodes = (self.ns.nodes())
 
-            all_routers = True
             print(nodes)
-            for nid, info in nodes.items():
-                if info['state'] not in ['leader', 'router']:
-                    all_routers = False
-                    break
+            all_routers = all(
+                info['state'] in ['leader', 'router']
+                for nid, info in nodes.items()
+            )
 
             if all_routers:
                 break
 
         if not all_routers:
-            raise UnexpectedError("not all nodes are Routers: %s" % self.ns.nodes())
+            raise UnexpectedError(f"not all nodes are Routers: {self.ns.nodes()}")
 
     def expect_node_addr(self, nodeid: int, addr: str, timeout=100):
         addr = ipaddress.IPv6Address(addr)
@@ -167,8 +165,7 @@ class BaseStressTest(object, metaclass=StressTestMetaclass):
 
     def expect_node_mleid(self, nodeid: int, timeout: int):
         while True:
-            mleid = self.ns.get_mleid(nodeid)
-            if mleid:
+            if mleid := self.ns.get_mleid(nodeid):
                 return mleid
 
             self.ns.go(1)

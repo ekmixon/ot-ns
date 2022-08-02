@@ -127,7 +127,7 @@ class StressTest(BaseStressTest):
         self.expect_all_nodes_become_routers()
 
         # wait for a period of time so that all routes are discovered
-        for i in range(4):
+        for _ in range(4):
             self.pings_1_hop(datasize=4)
             ns.go(100)
             ns.pings()  # throw away ping result

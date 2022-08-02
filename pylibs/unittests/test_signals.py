@@ -74,7 +74,7 @@ class SignalsTest(OTNSTestCase):
         self._test_signal_ignore(signal.SIGALRM)
 
     def testCommandHandleSignalOkx100(self):
-        for i in range(100):
+        for _ in range(100):
             self._testCommandHandleSignalOk()
 
             self.tearDown()
@@ -117,7 +117,7 @@ class SignalsTest(OTNSTestCase):
             exit_code = self.ns._otns.wait(timeout=WAIT_OTNS_TIMEOUT)
         except TimeoutExpired:
             logging.error('OTNS error code: %s', self.ns._otns.returncode)
-            os.system(f"curl http://localhost:8997/debug/pprof/goroutine?debug=2")
+            os.system("curl http://localhost:8997/debug/pprof/goroutine?debug=2")
             raise
 
         if sig == signal.SIGKILL:

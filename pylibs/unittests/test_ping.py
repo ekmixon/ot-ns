@@ -40,7 +40,7 @@ class BasicTests(OTNSTestCase):
         ns.add("router")
         ns.add("router")
 
-        for i in range(100):
+        for _ in range(100):
             ns.ping(1, 2, datasize=10)
             ns.ping(2, 1, datasize=10)
             ns.go(1)

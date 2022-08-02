@@ -94,19 +94,19 @@ class MleidConnectivityStressTest(BaseStressTest):
 
         BR_ADDR = self.expect_node_mleid(BR, 10)
 
-        for i in range(ROUTER_COUNT - 1):
+        for _ in range(ROUTER_COUNT - 1):
             nid = ns.add("router", x=random.randint(0, XMAX), y=random.randint(0, YMAX), radio_range=RADIO_RANGE)
             ns.radio_set_fail_time(nid, fail_time=(FAIL_DURATION, FAIL_INTERVAL))
 
-        for i in range(FED_COUNT):
+        for _ in range(FED_COUNT):
             nid = ns.add("fed", x=random.randint(0, XMAX), y=random.randint(0, YMAX), radio_range=RADIO_RANGE)
             ns.radio_set_fail_time(nid, fail_time=(FAIL_DURATION, FAIL_INTERVAL))
 
-        for i in range(MED_COUNT):
+        for _ in range(MED_COUNT):
             nid = ns.add("med", x=random.randint(0, XMAX), y=random.randint(0, YMAX), radio_range=RADIO_RANGE)
             ns.radio_set_fail_time(nid, fail_time=(FAIL_DURATION, FAIL_INTERVAL))
 
-        for i in range(SED_COUNT):
+        for _ in range(SED_COUNT):
             nid = ns.add("sed", x=random.randint(0, XMAX), y=random.randint(0, YMAX), radio_range=RADIO_RANGE)
             ns.radio_set_fail_time(nid, fail_time=(FAIL_DURATION, FAIL_INTERVAL))
             ns.set_poll_period(nid, SED_PULL_PERIOD)

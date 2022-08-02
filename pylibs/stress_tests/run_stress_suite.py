@@ -55,7 +55,7 @@ def main():
 
     script_path = sys.argv[0]
     script_dir = os.path.abspath(os.path.dirname(script_path))
-    logging.info('script directory: %s' % script_dir)
+    logging.info(f'script directory: {script_dir}')
 
     suite_names = sys.argv[1:]
     if not suite_names:
@@ -78,11 +78,8 @@ def run_suite(script_dir, suite_name: str):
 
         modname = os.path.splitext(filename)[0]
         mod = __import__(modname)
-        stress_test_classes = find_stress_test_classes(mod, suite_name)
-        if not stress_test_classes:
-            continue
-
-        stress_tests.append((filename, stress_test_classes))
+        if stress_test_classes := find_stress_test_classes(mod, suite_name):
+            stress_tests.append((filename, stress_test_classes))
 
     for filename, clses in sorted(stress_tests):
         for cls in clses:

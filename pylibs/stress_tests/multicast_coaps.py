@@ -107,8 +107,8 @@ class StressTest(BaseStressTest):
             ns.set_poll_period(nid, SED_POLL_PERIOD)
 
         for nid in range(1, TOTAL_NODE_COUNT + 1):
-            ns.node_cmd(nid, f'coap start')
-            ns.node_cmd(nid, f'coap resource test')
+            ns.node_cmd(nid, 'coap start')
+            ns.node_cmd(nid, 'coap resource test')
 
         ns.go(60)
 
@@ -143,15 +143,48 @@ class StressTest(BaseStressTest):
             assert multicast_msg is not None
 
             router_coverages.append(
-                sum(1 for nid in range(1, ROUTER_COUNT + 1) if nid in req_received) / (ROUTER_COUNT - 1))
-            fed_coverages.append(sum(1 for nid in range(ROUTER_COUNT + 1, ROUTER_COUNT + FED_COUNT + 1) if
-                                     nid in req_received) / FED_COUNT)
-            med_coverages.append(sum(
-                1 for nid in range(ROUTER_COUNT + FED_COUNT + 1, ROUTER_COUNT + FED_COUNT + MED_COUNT + 1) if
-                nid in req_received) / MED_COUNT)
-            sed_coverages.append(sum(1 for nid in range(ROUTER_COUNT + FED_COUNT + MED_COUNT + 1,
-                                                        ROUTER_COUNT + FED_COUNT + MED_COUNT + SED_COUNT + 1) if
-                                     nid in req_received) / SED_COUNT)
+                sum(nid in req_received for nid in range(1, ROUTER_COUNT + 1))
+                / (ROUTER_COUNT - 1)
+            )
+
+            fed_coverages.append(
+                (
+                    sum(
+                        nid in req_received
+                        for nid in range(
+                            ROUTER_COUNT + 1, ROUTER_COUNT + FED_COUNT + 1
+                        )
+                    )
+                    / FED_COUNT
+                )
+            )
+
+            med_coverages.append(
+                (
+                    sum(
+                        nid in req_received
+                        for nid in range(
+                            ROUTER_COUNT + FED_COUNT + 1,
+                            ROUTER_COUNT + FED_COUNT + MED_COUNT + 1,
+                        )
+                    )
+                    / MED_COUNT
+                )
+            )
+
+            sed_coverages.append(
+                (
+                    sum(
+                        nid in req_received
+                        for nid in range(
+                            ROUTER_COUNT + FED_COUNT + MED_COUNT + 1,
+                            ROUTER_COUNT + FED_COUNT + MED_COUNT + SED_COUNT + 1,
+                        )
+                    )
+                    / SED_COUNT
+                )
+            )
+
 
             router_delays += [time - send_time for nid, time in req_received.items() if 1 <= nid <= ROUTER_COUNT]
             fed_delays += [time - send_time for nid, time in req_received.items() if
@@ -178,10 +211,13 @@ class StressTest(BaseStressTest):
         self.result.fail_if(self.avg(med_coverages) < 0.7, 'MED coverage < 70%')
         self.result.fail_if(self.avg(sed_coverages) < 0.7, 'SED coverage < 70%')
 
-        self.result.fail_if(self.avg(router_delays) / 1000 > 200, 'Router avg. delay > 200ms')
-        self.result.fail_if(self.avg(fed_delays) / 1000 > 200, 'FED avg. delay > 200ms')
-        self.result.fail_if(self.avg(med_delays) / 1000 > 200, 'MED avg. delay > 200ms')
-        self.result.fail_if(self.avg(sed_delays) / 1000 > 2000, 'SED avg. delay > 2000ms')
+        self.result.fail_if(
+            self.avg(router_delays) > 200000, 'Router avg. delay > 200ms'
+        )
+
+        self.result.fail_if(self.avg(fed_delays) > 200000, 'FED avg. delay > 200ms')
+        self.result.fail_if(self.avg(med_delays) > 200000, 'MED avg. delay > 200ms')
+        self.result.fail_if(self.avg(sed_delays) > 2000000, 'SED avg. delay > 2000ms')
 
 
 if __name__ == '__main__':

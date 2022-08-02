@@ -184,7 +184,7 @@ class BasicTests(OTNSTestCase):
         ns.radio_set_fail_time(id, fail_time=(2, 10))
         total_count = 0
         failed_count = 0
-        for i in range(1000):
+        for _ in range(1000):
             ns.go(1)
             nodes = ns.nodes()
             failed = nodes[id]['failed']
@@ -266,7 +266,7 @@ class BasicTests(OTNSTestCase):
         ns: OTNS = self.ns
         nid = ns.add("router")
         self.assertEqual(16, ns.get_router_upgrade_threshold(nid))
-        for val in range(0, 33):
+        for val in range(33):
             ns.set_router_upgrade_threshold(nid, val)
             self.assertEqual(val, ns.get_router_upgrade_threshold(nid))
 
@@ -289,25 +289,21 @@ class BasicTests(OTNSTestCase):
         ns: OTNS = self.ns
         nid = ns.add("router")
         self.assertEqual(23, ns.get_router_downgrade_threshold(nid))
-        for val in range(0, 33):
+        for val in range(33):
             ns.set_router_downgrade_threshold(nid, val)
             self.assertEqual(val, ns.get_router_downgrade_threshold(nid))
 
     def testCoaps(self):
         ns: OTNS = self.ns
         ns.coaps_enable()
-        for i in range(10):
+        for _ in range(10):
             id = ns.add('router')
             ns.node_cmd(id, 'routerselectionjitter 1')
             ns.go(5)
 
         ns.go(10)
         msgs = ns.coaps()
-        routers = {}
-        for msg in msgs:
-            if msg.get('uri') == 'a/as':
-                routers[msg['src']] = msg['id']
-
+        routers = {msg['src']: msg['id'] for msg in msgs if msg.get('uri') == 'a/as'}
         # Node 2 ~ 10 should become Routers by sending `a/as`
         self.assertEqual(set(routers), set(range(2, 11)))
 

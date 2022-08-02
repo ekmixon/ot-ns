@@ -81,10 +81,10 @@ class StressTestResult(object):
         rows = ['| ' + ' | '.join(map(str, row)) + ' |' for row in rows]
         start_time = time.strftime("%m/%d %H:%M:%S", time.gmtime(self._start_time))
         stop_time = time.strftime("%m/%d %H:%M:%S", time.gmtime(self._stop_time))
-        passed_str = 'Passed' if not self._failed else 'Failed'
+        passed_str = 'Failed' if self._failed else 'Passed'
         fail_msg = ', '.join(self._fail_msgs)
         if fail_msg:
-            fail_msg = ': ' + fail_msg
+            fail_msg = f': {fail_msg}'
 
         return f'#### {self.name} **{passed_str}**{fail_msg} _({start_time} ~ {stop_time})_\n' + '\n'.join(
             rows) + '\n'

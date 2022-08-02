@@ -59,9 +59,7 @@ class StressTest(BaseStressTest):
 
     def __init__(self):
         headers = ['Network Size', 'Formation Time 1']
-        for i in range(2, REPEAT + 1):
-            headers.append(f'FT {i}')
-
+        headers.extend(f'FT {i}' for i in range(2, REPEAT + 1))
         super(StressTest, self).__init__("Network Formation Test", headers)
 
     def run(self):
@@ -82,9 +80,7 @@ class StressTest(BaseStressTest):
     @staticmethod
     def stdvar(nums: Sequence[float]):
         ex = sum(nums) / len(nums)
-        s = 0
-        for i in nums:
-            s += (i - ex) ** 2
+        s = sum((i - ex) ** 2 for i in nums)
         return float(s) / len(nums)
 
     def test_n(self, n):

@@ -86,8 +86,9 @@ class GRPCThread(threading.Thread):
                     self.exception_queue.put(errors.UnexpectedError(
                             "Expectation not fulfilled within time limit"))
                     return
-                if (all(s in str(event) for s in self.contain)
-                    and not any(s in str(event) for s in self.not_contain)):
+                if all(s in str(event) for s in self.contain) and all(
+                    s not in str(event) for s in self.not_contain
+                ):
                     return
         except Exception as error:
             self.exception_queue.put(error)
